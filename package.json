@@ -14,7 +14,6 @@
     "chalk": "^5.3.0",
     "jpeg-js": "^0.4.4",
     "lodash": "^4.17.21",
-    "worker": "^0.4.0",
     "worker-threads": "^1.0.0"
   }
 }
