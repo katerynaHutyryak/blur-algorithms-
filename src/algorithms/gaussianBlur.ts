@@ -1,7 +1,33 @@
-const RADIUS = 10
-const BYTES_PER_PIXEL = 4
+import { BufferRet } from "jpeg-js"
+import type { Algorithm } from "../types"
 
-export function motionBlur(rawImage) {
+const BYTES_PER_PIXEL = 4
+const SIGMA = 3
+const BOXES_COUNT = 2
+
+function getBoxes (n: number): number[] {
+    let wIdeal = Math.sqrt((12 * SIGMA * SIGMA / n) + 1)
+    let wl = Math.floor(wIdeal)
+
+    if(wl % 2 === 0) wl--
+    let wu = wl + 2
+
+    let mIdeal = (12 * SIGMA * SIGMA - n * wl * wl - 4 * n * wl - 3 * n) / (-4 * wl - 4)
+    let m = Math.round(mIdeal)
+
+    let sizes: number[] = new Array(n)
+    for (let i = 0; i < n; i++) {
+        if (i < m) {
+            sizes[i] = Math.floor(wl)
+        } else {
+            sizes[i] = Math.floor(wu)
+        }
+    }
+
+    return sizes
+}
+
+function runGaussian(rawImage: BufferRet, radius: number): BufferRet {
     const {width, height, data} = rawImage;
 
     const processedData = Buffer.alloc(data.length)
@@ -16,7 +42,7 @@ export function motionBlur(rawImage) {
             let hBlue = 0
             let hPixels = 0
 
-            for(let x = hrz - RADIUS + 1; x < hrz + RADIUS; x++) {
+            for(let x = hrz - radius + 1; x < hrz + radius; x++) {
                 if (x < 0 || x >= width) continue
                 const offsetBlur = (vrt * width + x) * BYTES_PER_PIXEL
 
@@ -45,7 +71,7 @@ export function motionBlur(rawImage) {
             let vBlue = 0
             let vPixels = 0
 
-            for(let y = vrt - RADIUS + 1; y < vrt + RADIUS; y++) {
+            for(let y = vrt - radius + 1; y < vrt + radius; y++) {
                 if (y < 0 || y >= height) continue
                 const offsetBlur = (y * width + hrz) * BYTES_PER_PIXEL
 
@@ -69,5 +95,22 @@ export function motionBlur(rawImage) {
         data: processedData,
         width,
         height,
+    }
+}
+
+export const gaussianBlur: Algorithm = (rawImage) => {
+    const bxs = getBoxes(BOXES_COUNT)
+
+    let runCount = 0
+    let processedImage: BufferRet | undefined;
+    while(runCount < BOXES_COUNT) {
+        processedImage = runGaussian(processedImage || rawImage, bxs[runCount])
+        runCount++
+    }
+
+    if (processedImage) {
+        return processedImage
+    } else {
+        throw new Error('"processedImage" can not be undefined')
     }
 }

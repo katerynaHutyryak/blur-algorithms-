@@ -1,4 +1,4 @@
-import { withTimeMeasure } from "./helpers/timeMeasurer.js"
+import { withTimeMeasure } from "./helpers/withTimeMeasure.js"
 import { decodeImage, encodeImage } from "./helpers/decoder.js"
 import { readOriginalImage, writeProcessedImage } from "./helpers/fileManager.js"
 import { getAlgorithm } from "./helpers/getAlgorithm.js"

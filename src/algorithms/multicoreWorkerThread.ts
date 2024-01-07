@@ -46,6 +46,6 @@ for (let vrt = 0; vrt < height; vrt++) {
     }
 }
 
-parentPort.postMessage(bluredPixelData)
+parentPort!.postMessage(bluredPixelData)
 
-parentPort.close()
+parentPort!.close()

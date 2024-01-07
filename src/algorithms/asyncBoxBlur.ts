@@ -1,10 +1,11 @@
 import _ from 'lodash'
+import type { Algorithm } from '../types'
 
 const MAX_SIZE = 2097150
 const BYTES_PER_PIXEL = 4
 // TODO: Add box size constant
 
-export async function asyncBoxBlur(rawImage) {   
+export const asyncBoxBlur: Algorithm = async (rawImage) => {   
     const {width, height, data} = rawImage
      
     const processedData = Buffer.alloc(data.length)
@@ -14,7 +15,7 @@ export async function asyncBoxBlur(rawImage) {
     for (let vrt = 0; vrt < height; vrt++) {
         for (let hrz = 0; hrz < width; hrz++) {
 
-            const promise = new Promise((resolve) => {
+            const promise = new Promise<void>((resolve) => {
                 const offset = (vrt * width + hrz) * BYTES_PER_PIXEL
 
                 let counter = 0

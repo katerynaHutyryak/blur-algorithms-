@@ -1,7 +1,9 @@
+import type { Algorithm } from "../types";
+
 const BYTES_PER_PIXEL = 4
 // TODO: Add box size constant
 
-export function boxBlur (rawImage) {
+export const boxBlur: Algorithm = (rawImage) => {
     const {width, height, data} = rawImage;
 
     const processedData = Buffer.alloc(data.length)
